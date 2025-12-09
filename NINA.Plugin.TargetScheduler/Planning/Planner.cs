@@ -85,7 +85,9 @@ namespace NINA.Plugin.TargetScheduler.Planning {
                             ? readyTargets[0]
                             : SelectTargetByScore(readyTargets, new ScoringEngine(activeProfile, profilePreferences, atTime, previousTarget));
                         List<IInstruction> instructions = new InstructionGenerator().Generate(selectedTarget, previousTarget);
+
                         HandleTargetSwitch(previousTarget, selectedTarget);
+                        TargetEditGuard.Instance.Clear();
 
                         // Target ready now
                         return new SchedulerPlan(atTime, projects, selectedTarget, instructions, !checkCondition);
@@ -377,6 +379,9 @@ namespace NINA.Plugin.TargetScheduler.Planning {
             foreach (ITarget target in readyTargets) {
                 target.SelectedExposure = target.ExposureSelector.Select(atTime, target.Project, target);
             }
+
+            // Remove any target where we couldn't determine the selected exposure
+            readyTargets.RemoveAll(t => t.SelectedExposure == null);
         }
 
         /// <summary>

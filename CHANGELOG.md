@@ -1,8 +1,16 @@
 # Target Scheduler
 
-## 5.8.2.0 - 2025-XX-XX
+## 5.8.3.0 - 2025-12-01
+* The first 'Switch filter' is now shown in the TS sequence progress display even if same filter was used by last exposure of previous target.
+* Added selection of profile to constrain queries for Acquired Image and Reporting results.
+* Fixed issue where targets could have no selectable exposure plan (related to exposure plan disable).
+
+## 5.8.2.0 - 2025-10-29
 * New profile preference to disable target completion reset at the profile level.
+* Fixes for TS failure when it can't find a suitable exposure.
+* Fix for override exposure orders and disabled exposure plans.
 * Fixed SQLite dll load error on startup.
+* Added a warning to the custom trigger sequence drop area.
 * Added guids to most tables to support future api.
 * Fix for threading problem in scheduler progress vm add.
 
