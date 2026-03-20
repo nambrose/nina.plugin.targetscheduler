@@ -102,12 +102,18 @@ namespace NINA.Plugin.TargetScheduler.Controls.DatabaseManager {
 
         private void Save() {
             TSLogger.SetLogLevel(ProfilePreferenceProxy.ProfilePreference.LogLevel);
+
             managerVM.SaveProfilePreference(ProfilePreferenceProxy.ProfilePreference);
             ProfilePreferenceProxy.OnSave();
             ProfilePreferenceProxy.PropertyChanged -= ProfilePreferenceProxy_PropertyChanged;
             ShowEditView = false;
             ItemEdited = false;
             managerVM.SetEditMode(false);
+
+            TargetScheduler.StopAPIServer();
+            if (ProfilePreferenceProxy.ProfilePreference.EnableAPI) {
+                TargetScheduler.StartAPIServer(profileService);
+            }
         }
 
         private void Cancel() {

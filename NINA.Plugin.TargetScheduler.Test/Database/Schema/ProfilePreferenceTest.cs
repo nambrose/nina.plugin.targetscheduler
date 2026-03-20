@@ -47,6 +47,10 @@ namespace NINA.Plugin.TargetScheduler.Test.Database.Schema {
             sut.EnableSimulatedRun.Should().BeFalse();
             sut.SkipSimulatedWaits.Should().BeTrue();
             sut.SkipSimulatedUpdates.Should().BeFalse();
+
+            sut.EnableAPI.Should().BeFalse();
+            sut.APIPort.Should().Be(8188);
+            sut.APIPrettyPrint.Should().BeFalse();
         }
     }
 }

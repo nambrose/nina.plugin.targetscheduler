@@ -52,6 +52,10 @@ namespace NINA.Plugin.TargetScheduler.Database.Schema {
         public int skipSimulatedWaits { get; set; }
         public int skipSimulatedUpdates { get; set; }
 
+        public int enableAPI { get; set; }
+        public int apiPort { get; set; }
+        public int apiPrettyPrint { get; set; }
+
         public ProfilePreference() {
         }
 
@@ -94,6 +98,10 @@ namespace NINA.Plugin.TargetScheduler.Database.Schema {
             EnableSimulatedRun = false;
             SkipSimulatedWaits = true;
             SkipSimulatedUpdates = false;
+
+            EnableAPI = false;
+            APIPort = 8188;
+            APIPrettyPrint = false;
         }
 
         [NotMapped]
@@ -434,6 +442,36 @@ namespace NINA.Plugin.TargetScheduler.Database.Schema {
 
         [NotMapped]
         public bool DoSkipSimulatedUpdates => EnableSimulatedRun && SkipSimulatedUpdates;
+
+        [NotMapped]
+        [JsonProperty]
+        public bool EnableAPI {
+            get { return enableAPI == 1; }
+            set {
+                enableAPI = value ? 1 : 0;
+                RaisePropertyChanged(nameof(EnableAPI));
+            }
+        }
+
+        [NotMapped]
+        [JsonProperty]
+        public int APIPort {
+            get { return apiPort; }
+            set {
+                apiPort = value;
+                RaisePropertyChanged(nameof(APIPort));
+            }
+        }
+
+        [NotMapped]
+        [JsonProperty]
+        public bool APIPrettyPrint {
+            get { return apiPrettyPrint == 1; }
+            set {
+                apiPrettyPrint = value ? 1 : 0;
+                RaisePropertyChanged(nameof(APIPrettyPrint));
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

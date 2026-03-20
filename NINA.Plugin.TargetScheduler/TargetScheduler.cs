@@ -3,6 +3,7 @@ using NINA.Core.Model;
 using NINA.Core.Utility;
 using NINA.Equipment.Interfaces;
 using NINA.Plugin.Interfaces;
+using NINA.Plugin.TargetScheduler.API;
 using NINA.Plugin.TargetScheduler.Controls.AcquiredImages;
 using NINA.Plugin.TargetScheduler.Controls.DatabaseManager;
 using NINA.Plugin.TargetScheduler.Controls.PlanPreview;
@@ -37,6 +38,8 @@ namespace NINA.Plugin.TargetScheduler {
         public static readonly ImagePattern FlatSessionIdImagePattern = new ImagePattern("$$TSSESSIONID$$", "Session identifier for working with TS lights and flats", "Target Scheduler");
 
         public static readonly ImagePattern ProjectNameImagePattern = new ImagePattern("$$TSPROJECTNAME$$", "TS project name (if available)", "Target Scheduler");
+
+        private static APIServer APIServer;
 
         private IProfileService profileService;
         private IApplicationMediator applicationMediator;
@@ -77,8 +80,11 @@ namespace NINA.Plugin.TargetScheduler {
                 SyncManager.Instance.Start(profileService);
             }
 
-            //new ExportProfile(profileService.ActiveProfile, false).Export();
-            //new ImportProfile(profileService.ActiveProfile, "C:\\Users\\Tom\\AppData\\Local\\NINA\\SchedulerPlugin\\exported-all.zip", true).Import();
+            (bool apiEnabled, int apiPort, bool prettyPrint) = APIPrefs(profileService);
+            if (apiEnabled) {
+                APIServer = new APIServer(apiPort, prettyPrint, profileService, new SchedulerDatabaseInteraction());
+                APIServer.Start();
+            }
 
             TSLogger.Info("plugin initialized");
             return Task.CompletedTask;
@@ -95,6 +101,24 @@ namespace NINA.Plugin.TargetScheduler {
         public static bool SyncEnabled(IProfileService profileService) {
             ProfilePreference profilePreference = new SchedulerPlanLoader(profileService.ActiveProfile).GetProfilePreferences();
             return profilePreference.EnableSynchronization;
+        }
+
+        public static (bool enabled, int port, bool prettyPrint) APIPrefs(IProfileService profileService) {
+            ProfilePreference profilePreference = new SchedulerPlanLoader(profileService.ActiveProfile).GetProfilePreferences();
+            return (profilePreference.EnableAPI, profilePreference.APIPort, profilePreference.APIPrettyPrint);
+        }
+
+        public static void StartAPIServer(IProfileService profileService) {
+            APIServer?.Stop();
+
+            (bool apiEnabled, int apiPort, bool prettyPrint) = APIPrefs(profileService);
+            APIServer = new APIServer(apiPort, prettyPrint, profileService, new SchedulerDatabaseInteraction());
+            APIServer.Start();
+        }
+
+        public static void StopAPIServer() {
+            APIServer?.Stop();
+            APIServer = null;
         }
 
         private LogLevelEnum ProfileLogLevel(IProfileService profileService) {
@@ -196,6 +220,7 @@ namespace NINA.Plugin.TargetScheduler {
 
         public override Task Teardown() {
             ImageGradingController.Instance.Shutdown();
+            APIServer?.Stop();
 
             if (SyncManager.Instance.IsRunning) {
                 SyncManager.Instance.Shutdown();
@@ -233,6 +258,14 @@ namespace NINA.Plugin.TargetScheduler {
                     if (SyncEnabled(profileService)) {
                         SyncManager.Instance.Start(profileService);
                     }
+                }
+
+                APIServer?.Stop();
+                APIServer = null;
+                (bool apiEnabled, int apiPort, bool prettyPrint) = APIPrefs(profileService);
+                if (apiEnabled) {
+                    APIServer = new APIServer(apiPort, prettyPrint, profileService, new SchedulerDatabaseInteraction());
+                    APIServer.Start();
                 }
             }
         }

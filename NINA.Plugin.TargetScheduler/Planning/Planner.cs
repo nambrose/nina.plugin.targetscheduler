@@ -6,6 +6,7 @@ using NINA.Equipment.Interfaces.Mediator;
 using NINA.Plugin.TargetScheduler.Astrometry;
 using NINA.Plugin.TargetScheduler.Database;
 using NINA.Plugin.TargetScheduler.Database.Schema;
+using NINA.Plugin.TargetScheduler.Planning.Entities;
 using NINA.Plugin.TargetScheduler.Planning.Exposures;
 using NINA.Plugin.TargetScheduler.Planning.Interfaces;
 using NINA.Plugin.TargetScheduler.Planning.Scoring;
@@ -324,6 +325,7 @@ namespace NINA.Plugin.TargetScheduler.Planning {
                 foreach (ITarget target in project.Targets) {
                     if (target.Rejected
                         && target.RejectedReason != Reasons.TargetNotYetVisible
+                        && target.RejectedReason != Reasons.TargetMoonAvoidance
                         && target.RejectedReason != Reasons.TargetBeforeMeridianWindow
                         && target.RejectedReason != Reasons.TargetMeridianFlipClipped
                         && target.RejectedReason != Reasons.TargetMaxAltitude) {
@@ -439,6 +441,23 @@ namespace NINA.Plugin.TargetScheduler.Planning {
             // the previous target so it starts fresh if selected in the future
             if (selectedTarget.DatabaseId != previousTarget.DatabaseId) {
                 DitherManagerCache.Remove(previousTarget);
+            }
+        }
+
+        private List<IExposure> GetExposurePlans(ITarget target) {
+            try {
+                SchedulerDatabaseInteraction database = new SchedulerDatabaseInteraction();
+                using (ISchedulerDatabaseContext context = database.GetContext()) {
+                    var eps = context.GetExposurePlans(target.DatabaseId);
+                    List<IExposure> exposures = new List<IExposure>(eps.Count);
+                    eps.ForEach(ep => {
+                        exposures.Add(new PlanningExposure(target, ep, ep.ExposureTemplate));
+                    });
+                    return exposures;
+                }
+            } catch (Exception ex) {
+                TSLogger.Error($"exception reloading target exposure plans {target.Name}: {ex.StackTrace}");
+                throw new SequenceEntityFailedException($"Scheduler: exception reloading target exposure plans: {ex.Message}", ex);
             }
         }
 

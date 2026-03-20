@@ -6,16 +6,16 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("An automated target scheduler for NINA")]
 [assembly: AssemblyCompany("Tom Palmer @tcpalmer")]
 [assembly: AssemblyProduct("Target Scheduler")]
-[assembly: AssemblyCopyright("Copyright © 2025")]
+[assembly: AssemblyCopyright("Copyright © 2026")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: System.Runtime.Versioning.SupportedOSPlatformAttribute("windows")]
-[assembly: AssemblyVersion("5.8.3.2")]
-[assembly: AssemblyFileVersion("5.8.3.2")]
+[assembly: AssemblyVersion("5.9.0.0")]
+[assembly: AssemblyFileVersion("5.9.0.0")]
 
 // The minimum Version of N.I.N.A. that this plugin is compatible with
-[assembly: AssemblyMetadata("MinimumApplicationVersion", "3.1.2.9001")]
+[assembly: AssemblyMetadata("MinimumApplicationVersion", "3.2.0.9001")]
 [assembly: AssemblyMetadata("License", "MPL-2.0")]
 [assembly: AssemblyMetadata("LicenseURL", "https://www.mozilla.org/en-US/MPL/2.0/")]
 [assembly: AssemblyMetadata("Repository", "https://github.com/tcpalmer/nina.plugin.targetscheduler/")]
@@ -37,6 +37,7 @@ using System.Runtime.InteropServices;
 * Automated flats support
 * Synchronization across multiple instances of NINA
 * Support for 24x7 sequences for long term unattended operation
+* API (read-only access for now)
 
 If you like this plugin and it saves you time, please consider [Buying Me a Beer](https://www.buymeacoffee.com/tcpalmer).
 
@@ -47,6 +48,7 @@ The [plugin documentation](https://tcpalmer.github.io/nina-scheduler/) provides 
 * Chris Woodhouse has been involved since the beginning and was instrumental in hashing out the initial design and requirements.
 * Matt Nudi also provided design feedback and critical early beta testing.
 * Linda Thomas-Fowler and Chris Kagy continue to provide invaluable testing and feedback on features.
+* @Reluthan contributed the initial version of the API.
 * The concept for the plugin was originally inspired by the AIC video [Tim Hutchison: Automating a Backyard Observatory](https://www.youtube.com/watch?v=a4IkAUZkXH0).
 * Any automated scheduler is going to owe a debt of gratitude to [ACP](https://acpx.dc3.com/) for pioneering in this area.
 * Finally, it's a tribute to the elegant design of NINA and the Advanced Sequencer that a plugin of this type is not only possible, but can also interact correctly with other elements in a sequence.
